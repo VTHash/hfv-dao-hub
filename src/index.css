@@ -1,0 +1,99 @@
+/* HFV Green: #00ff88 | Dark bg: #060907 | Text: #eafff1 */
+:root{
+  --hfv: #00ff88;
+  --bg: #060907;
+  --card: #0b120f;
+  --muted: #bfffe1;
+  --text: #eafff1;
+  --line: rgba(0,255,136,0.18);
+  --glow: 0 0 40px rgba(0,255,136,0.13), 0 0 2px rgba(0,255,136,0.4) inset;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(0,255,136,0.12), transparent 60%),
+              radial-gradient(900px 500px at 120% 20%, rgba(0,255,136,0.08), transparent 60%),
+              var(--bg);
+  color: var(--text);
+}
+
+.app{min-height:100%; display:flex; flex-direction:column}
+.container{width:100%; max-width:1200px; margin:0 auto; padding:24px 16px; flex:1}
+
+/* Topbar */
+.topbar{
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--line);
+  background: rgba(6,9,7,0.7); backdrop-filter: blur(8px);
+}
+.brand{display:flex; align-items:center; gap:10px; color:var(--text); text-decoration:none; font-weight:700}
+.logo-dot{width:22px; height:22px; border-radius:6px; background:var(--hfv); box-shadow:0 0 14px var(--hfv)}
+.nav{display:flex; gap:12px}
+.navlink{color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:10px}
+.navlink.active, .navlink:hover{color:#031; background:rgba(0,255,136,0.2); border:1px solid var(--line)}
+
+/* Hero */
+.hero{padding:60px 16px 24px}
+.hero-content{max-width:1000px; margin:0 auto; text-align:center}
+.hero-title{font-size: clamp(32px, 5vw, 56px); margin:0 0 8px; letter-spacing:-0.02em; color:#ccffd6}
+.hero-sub{opacity:0.9; margin:0 0 24px}
+.hero-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+
+/* Buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 16px; border-radius:14px; text-decoration:none; border:1px solid var(--line);
+  transition:.2s ease; font-weight:600}
+.btn.primary{background:var(--hfv); color:#000; box-shadow:var(--glow)}
+.btn.primary:hover{filter:brightness(0.95)}
+.btn.ghost{background:rgba(0,255,136,0.08); color:var(--muted)}
+.btn.ghost:hover{background:rgba(0,255,136,0.16)}
+.btn.sm{padding:8px 12px; font-size:0.9rem}
+
+/* Hub head */
+.hub-head .title{font-size: clamp(24px, 3.5vw, 36px); margin:8px 0}
+.hub-head .sub{opacity:0.8; margin:0 0 12px}
+
+/* Toolbar */
+.toolbar{display:grid; gap:12px; grid-template-columns:1fr; margin:16px 0 24px}
+@media(min-width:860px){ .toolbar{grid-template-columns: 1fr auto} }
+
+.search input{
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+  background:rgba(0,255,136,0.06); color:var(--text); outline:none; box-shadow:var(--glow)
+}
+.filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.pill{padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(0,255,136,0.1); color:var(--muted); cursor:pointer}
+.pill.active, .pill:hover{background:var(--hfv); color:#031; border-color:transparent}
+
+/* Grid & Cards */
+.grid{display:grid; gap:16px; grid-template-columns:repeat(1, minmax(0,1fr))}
+@media(min-width:560px){ .grid{grid-template-columns:repeat(2, minmax(0,1fr))} }
+@media(min-width:980px){ .grid{grid-template-columns:repeat(3, minmax(0,1fr))} }
+
+.card{position:relative; border-radius:18px; padding:1px; background:linear-gradient(180deg, rgba(0,255,136,0.55), rgba(0,255,136,0.12) 45%, transparent 100%)}
+.card-inner{background:var(--card); border-radius:18px; padding:16px; height:100%; display:flex; flex-direction:column; gap:12px; box-shadow:var(--glow)}
+.card-head{display:flex; gap:12px; align-items:flex-start}
+.avatar{width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(0,255,136,0.18)}
+.head-text{display:flex; flex-direction:column; gap:8px}
+.card-title{margin:0; font-size:1.1rem; color:#ccffd6}
+.tags{display:flex; gap:6px; flex-wrap:wrap}
+.tag{font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:rgba(0,255,136,0.06)}
+.desc{opacity:0.9; margin:0}
+.links{display:flex; flex-wrap:wrap; gap:8px; margin-top:auto}
+.empty{opacity:0.8; border:1px dashed var(--line); padding:16px; border-radius:12px; text-align:center}
+
+/* Footer */
+.footer{border-top:1px solid var(--line); padding:16px; display:flex; gap:8px; align-items:center; justify-content:space-between; color:var(--muted)}
+.footer .tiny{font-size:12px; opacity:0.9}
+.dao-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: #fff; /* white background like Linea for better contrast */
+  padding: 4px;
+  box-shadow: 0 0 12px rgba(0,255,136,0.15);
+}

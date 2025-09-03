@@ -25,7 +25,7 @@ export default function App() {
 
       <footer className="footer">
         <div>© {new Date().getFullYear()} HFV Protocol</div>
-        <div className="tiny">Styled in HFV green • Built with React + Vite</div>
+        <div className="tiny">© HFV  transparent by design.</div>
       </footer>
     </div>
   );

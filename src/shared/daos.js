@@ -22,7 +22,7 @@ export const DAOS = [
   id: "hfv",
   name: "HFV Protocol",
   short: "HFV",
-  logo: "/logos/hfv-logo.png",
+  logo: "/hfv-logo.png",
   tags: ["HFV", "Ecosystem"],
   app: "https://hfvstaking.app/",
   governance: "https://hfvprotocol.org/dao", // replace later if add Snapshot/Tally
@@ -32,7 +32,7 @@ export const DAOS = [
   {
     id: "mantle",
     name: "Mantle DAO",
-    logo: "/logos/mantle-mnt-logo.svg",
+    logo: "/mantle-mnt-logo.svg",
     tags: ["L2", "Treasury Top", "DeFi"],
     app: "https://www.mantle.xyz/",
     governance: "https://delegatevote.mantle.xyz/",
@@ -42,7 +42,7 @@ export const DAOS = [
   {
     id: "uniswap",
     name: "Uniswap DAO",
-    logo: "/logos/uniswap.png",
+    logo: "/uniswap.png",
     tags: ["DEX", "DeFi"],
     app: "https://uniswap.org/",
     governance: "https://uniswapfoundation.org/governance",
@@ -53,7 +53,7 @@ export const DAOS = [
   {
     id: "optimism",
     name: "Optimism Collective",
-    logo: "/logos/optimism.png",
+    logo: "/optimism.png",
     tags: ["L2", "Grants"],
     app: "https://community.optimism.io/welcome/welcome-overview",
     governance: "https://vote.optimism.io/",
@@ -63,7 +63,7 @@ export const DAOS = [
   {
     id: "ens",
     name: "ENS DAO",
-    logo: "/logos/ens.png", 
+    logo: "/ens.png", 
     tags: ["Identity"],
     app: "https://ens.domains/",
     governance: "https://ens.domains/governance",
@@ -74,7 +74,7 @@ export const DAOS = [
   {
     id: "arbitrum",
     name: "Arbitrum DAO",
-    logo: "/logos/arbitrum.png", 
+    logo: "/arbitrum.png", 
     tags: ["L2", "Grants"],
     app: "https://portal.arbitrum.io/",
     governance: "https://docs.arbitrum.foundation/how-tos/vote-dao-proposals",
@@ -85,7 +85,7 @@ export const DAOS = [
   {
     id: "dexe",
     name: "DeXe DAO",
-    logo: "/logos/dexe.png", 
+    logo: "/dexe.png", 
     tags: ["DAO Tooling"],
     app: "https://dexe.network/",
     governance: "https://www.dexe.io/",
@@ -95,7 +95,7 @@ export const DAOS = [
   {
     id: "gnosis",
     name: "GnosisDAO",
-    logo: "/logos/gnosis.png",
+    logo: "/gnosis.png",
     tags: ["Wallet", "DAO Tooling"],
     app: "https://www.gnosis.io/",
     governance: "https://docs.gnosis.io/docs/Goverance",
@@ -105,7 +105,7 @@ export const DAOS = [
   {
     id: "maker",
     name: "MakerDAO (Sky)",
-    logo: "/logos/makerdao.png", 
+    logo: "/makerdao.png", 
     tags: ["DeFi", "Treasury Top"],
     app: "https://sky.money/",
     governance: "https://vote.makerdao.com/",
@@ -115,7 +115,7 @@ export const DAOS = [
   {
     id: "graph",
     name: "The Graph DAO",
-    logo: "/logos/thegraph.png",
+    logo: "/thegraph.png",
     tags: ["Indexing", "Infra"],
     app: "https://thegraph.com/",
     governance: "https://thegraph.com/governance/",
@@ -126,7 +126,7 @@ export const DAOS = [
   {
     id: "safe",
     name: "SafeDAO",
-    logo: "/logos/safe.png",
+    logo: "/safe.png",
     tags: ["Wallet", "DAO Tooling"],
     app: "https://safe.global/",
     governance: "https://safe.global/governance",
@@ -136,7 +136,7 @@ export const DAOS = [
   {
     id: "lido",
     name: "Lido DAO",
-    logo: "/logos/lido.png",
+    logo: "/lido.png",
     tags: ["Liquid Staking", "DeFi"],
     app: "https://lido.fi/",
     governance: "https://lido.fi/governance",
@@ -147,7 +147,7 @@ export const DAOS = [
   {
     id: "aave",
     name: "Aave DAO",
-    logo: "/logos/aave.png",
+    logo: "/aave.png",
     tags: ["Lending", "DeFi"],
     app: "https://app.aave.com/",
     governance: "https://app.aave.com/governance/",
@@ -158,7 +158,7 @@ export const DAOS = [
   {
     id: "compound",
     name: "Compound DAO",
-    logo: "/logos/compound.png",
+    logo: "/compound.png",
     tags: ["Lending", "DeFi"],
     app: "https://compound.finance/",
     governance: "https://compound.finance/governance/comp",
@@ -169,7 +169,7 @@ export const DAOS = [
   {
     id: "gitcoin",
     name: "Gitcoin DAO",
-    logo: "/logos/gitcoin.jpg",
+    logo: "/gitcoin.jpg",
     tags: ["Grants", "Public Goods"],
     app: "https://gitcoin.co/",
     governance: "https://gitcoin.co/gtc/empowering-governance",
@@ -179,7 +179,7 @@ export const DAOS = [
   {
     id: "dydx",
     name: "dYdX DAO",
-    logo: "/logos/dydx.png",
+    logo: "/dydx.png",
     tags: ["Perps", "DeFi"],
     app: "https://dydx.community/",
     governance: "https://www.dydx.foundation/",

@@ -98,17 +98,6 @@ body{
   box-shadow: 0 0 12px rgba(0,255,136,0.15);
 }
 
-.hero-logo {
-  width: 56px; /* smaller size */
-  height: 56px;
-  object-fit: contain;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: #fff; /* optional backdrop */
-  padding: 4px;
-  box-shadow: 0 0 10px rgba(0,255,136,0.25);
-}
-
 /* Background pulse animation */
 @keyframes bgPulse {
   0% {
@@ -129,3 +118,4 @@ body{
   background: #060907; /* dark base */
   animation: bgPulse 6s ease-in-out infinite; /* ✅ green pulse */
 }
+

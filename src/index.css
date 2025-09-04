@@ -108,3 +108,24 @@ body{
   padding: 4px;
   box-shadow: 0 0 10px rgba(0,255,136,0.25);
 }
+
+/* Background pulse animation */
+@keyframes bgPulse {
+  0% {
+    background-color: #060907; /* base dark */
+  }
+  50% {
+    background-color: #0b120d; /* slightly lighter, greenish tint */
+  }
+  100% {
+    background-color: #060907;
+  }
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #060907; /* dark base */
+  animation: bgPulse 6s ease-in-out infinite; /* ✅ green pulse */
+}

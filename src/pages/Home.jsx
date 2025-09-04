@@ -7,10 +7,10 @@ export default function Home() {
       <div className="hero-content">
         <h1 className="hero-title">HFV DAO Hub</h1>
         <p className="hero-sub">
-          Your curated gateway to top DAO apps & governance. Green glow, clean UX.
+          Your curated gateway to top DAO apps & AI/Agents projetcs. Green glow, clean UX.
         </p>
         <div className="hero-actions">
-          <Link to="/daos" className="btn primary">Explore DAO Apps</Link>
+          <Link to="/hub" className="btn primary">Explore DAO & AI</Link>
           <a href="https://deepdao.io/" target="_blank" rel="noreferrer" className="btn ghost">
             DAO Analytics (DeepDAO)
           </a>

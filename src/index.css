@@ -97,3 +97,14 @@ body{
   padding: 4px;
   box-shadow: 0 0 12px rgba(0,255,136,0.15);
 }
+
+.hero-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 16px;
+  border-radius: 20px;
+  background: #fff; /* optional backdrop */
+  padding: 8px;
+  box-shadow: 0 0 20px rgba(0,255,136,0.25);
+}

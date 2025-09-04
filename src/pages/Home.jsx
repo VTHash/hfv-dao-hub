@@ -8,7 +8,7 @@ export default function Home() {
         
         <h1 className="hero-title">HFV DAO Hub</h1>
         <p className="hero-sub">
-          Your curated gateway to top DAO apps & AI/Agents.
+          Your curated gateway to top DAO apps & AI/Agents
         </p>
         <div className="hero-actions">
           <Link to="/hub" className="btn primary">Explore DAO & AI</Link>

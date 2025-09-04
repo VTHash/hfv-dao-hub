@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import TokenTicker from "../components/TokenTicker.jsx";
 export default function Home() {
   return (
     <section className="hero">
@@ -15,8 +16,9 @@ export default function Home() {
             DAO Analytics (DeepDAO)
           </a>
         </div>
-
-        {/* TODO: Add your custom homepage blocks (HFV stats, announcements, etc.) */}
+        </div>
+<div style={{marginTop:20}}>
+  <TokenTicker />
       </div>
     </section>
   );

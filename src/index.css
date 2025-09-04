@@ -119,3 +119,10 @@ body{
   animation: bgPulse 6s ease-in-out infinite; /* ✅ green pulse */
 }
 
+.brand-logo {
+  width: 36px; /* adjust size */
+  height: 36px;
+  object-fit: contain;
+  margin-right: 8px;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 154, 0.6));
+}

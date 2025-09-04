@@ -8,10 +8,15 @@ export default function App() {
     <div className="app">
       {/* Topbar */}
       <header className="topbar">
-        <Link to="/" className="brand">
-          <span className="logo-dot" />
-          <span>HFV DAO Hub</span>
-        </Link>
+       <Link to="/" className="brand">
+      <img
+        src="/hfv-logo.png"
+        alt="HFV Logo"
+        className="brand-logo"
+      />
+      <span>HFV DAO Hub</span>
+    </Link>
+  
 
         <nav className="nav">
           <NavLink to="/" end className="navlink">

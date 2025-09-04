@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Routes } from "react-router-dom";
 import DaoHub from "./pages/DaoHub.jsx";
 import Home from "./pages/Home.jsx";
 import AIAgents from "./pages/AIAgents.jsx";
+import Hub from "./pages/Hub.jsx";
 
 export default function App() {
   return (

@@ -5,6 +5,10 @@ export default function Home() {
   return (
     <section className="hero">
       <div className="hero-content">
+        <img
+        src="/hfv-logo.png"
+        alt="HFV Protocol Logo"
+        />
         <h1 className="hero-title">HFV DAO Hub</h1>
         <p className="hero-sub">
           Your curated gateway to top DAO apps & AI/Agents projetcs. Green glow, clean UX.

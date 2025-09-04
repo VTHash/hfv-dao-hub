@@ -1,33 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/**
- * TokenTicker
- * - Fetches top tokens from CoinGecko (logo, name, symbol, 24h change)
- * - Fetches multi-quote prices (USDT≈USD, BTC, ETH) and merges
- * - Search + client-side sort
- *
- * Notes:
- * - Rate-limit friendly: only 2 requests per load (markets + simple/price)
- * - You should keep the small attribution below per CoinGecko terms
- */
-
-const PAGE_SIZE = 100; // up to 250 per page if you want more
-const GECKO_MARKETS =
-  `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=${PAGE_SIZE}&page=1&sparkline=false&price_change_percentage=24h`;
+const PAGE_SIZE = 250; // ← top 250
+const GECKO_MARKETS = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${PAGE_SIZE}&page=1&sparkline=false&price_change_percentage=24h`;
 const simplePriceUrl = (ids) =>
   `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd,btc,eth`;
 
 const fmt = {
-  usd: (n) =>
-    n >= 1
-      ? `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-      : `$${n.toLocaleString(undefined, { maximumFractionDigits: 6 })}`,
-  btc: (n) => `${n.toLocaleString(undefined, { maximumFractionDigits: 8 })} BTC`,
-  eth: (n) => `${n.toLocaleString(undefined, { maximumFractionDigits: 6 })} ETH`,
-  pct: (n) => {
-    const sign = n >= 0 ? "+" : "";
-    return `${sign}${n?.toFixed?.(2) ?? n}%`;
-  },
+  usd: (n) => (n >= 1 ? `$${n.toLocaleString(undefined,{maximumFractionDigits:2})}`
+                      : `$${n.toLocaleString(undefined,{maximumFractionDigits:6})}`),
+  btc: (n) => `${n.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`,
+  eth: (n) => `${n.toLocaleString(undefined,{maximumFractionDigits:6})} ETH`,
+  pct: (n) => `${n >= 0 ? "+" : ""}${(n ?? 0).toFixed(2)}%`,
 };
 
 export default function TokenTicker() {
@@ -41,29 +24,27 @@ export default function TokenTicker() {
     let mounted = true;
     (async () => {
       try {
-        setLoading(true);
-        setErr("");
+        setLoading(true); setErr("");
 
-        // 1) Get markets (includes logo image + 24h change + market cap)
+        // 1) markets (has logo + 24h change + mc)
         const mRes = await fetch(GECKO_MARKETS, { cache: "no-store" });
         if (!mRes.ok) throw new Error("CoinGecko markets error");
         const markets = await mRes.json();
 
-        // 2) Get multi-quote prices (usd, btc, eth)
+        // 2) multi-quote (usd/btc/eth)
         const ids = markets.map((m) => m.id).join(",");
         const pRes = await fetch(simplePriceUrl(encodeURIComponent(ids)), { cache: "no-store" });
         if (!pRes.ok) throw new Error("CoinGecko price error");
         const prices = await pRes.json();
 
-        // 3) Merge
+        // 3) merge
         const merged = markets.map((m) => {
           const p = prices[m.id] || {};
           return {
             id: m.id,
             name: m.name,
             symbol: m.symbol?.toUpperCase(),
-            logo: m.image,
-            // treat USD as USDT quote for display purposes
+            logo: m.image, // ✅ official logo URL
             usdt: typeof p.usd === "number" ? p.usd : m.current_price ?? null,
             btc: typeof p.btc === "number" ? p.btc : null,
             eth: typeof p.eth === "number" ? p.eth : null,
@@ -79,64 +60,41 @@ export default function TokenTicker() {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    let r = rows;
-    if (q) {
-      r = r.filter(
-        (x) =>
+    let r = q
+      ? rows.filter(x =>
           x.name.toLowerCase().includes(q) ||
           x.symbol.toLowerCase().includes(q) ||
-          x.id.toLowerCase().includes(q)
-      );
-    }
-    if (sortKey === "mc") {
-      r = [...r].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
-    } else if (sortKey === "usd") {
-      r = [...r].sort((a, b) => (b.usdt ?? 0) - (a.usdt ?? 0));
-    } else if (sortKey === "chg") {
-      r = [...r].sort(
-        (a, b) => (b.change24 ?? -Infinity) - (a.change24 ?? -Infinity)
-      );
-    }
+          x.id.toLowerCase().includes(q))
+      : rows;
+
+    if (sortKey === "mc") r = [...r].sort((a,b)=>(b.marketCap??0)-(a.marketCap??0));
+    if (sortKey === "usd") r = [...r].sort((a,b)=>(b.usdt??0)-(a.usdt??0));
+    if (sortKey === "chg") r = [...r].sort((a,b)=>(b.change24??-Infinity)-(a.change24??-Infinity));
     return r;
   }, [rows, query, sortKey]);
 
   return (
     <section className="card" aria-labelledby="ticker-title">
       <div style={{display:"flex", alignItems:"center", gap:12, justifyContent:"space-between", flexWrap:"wrap"}}>
-        <h2 id="ticker-title" style={{margin:0}}>Markets — Live (USDT / BTC / ETH)</h2>
+        <h2 id="ticker-title" style={{margin:0}}>Markets — Live (Top 250)</h2>
         <div style={{display:"flex", gap:8, alignItems:"center", flexWrap:"wrap"}}>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search token (e.g., ETH, ARB)"
             aria-label="Search tokens"
-            style={{
-              padding:"10px 12px",
-              borderRadius:12,
-              border:"1px solid rgba(0,255,154,.35)",
-              background:"#0a0f0e",
-              color:"#d6ffe9",
-              minWidth:220
-            }}
+            style={{padding:"10px 12px", borderRadius:12, border:"1px solid rgba(0,255,154,.35)", background:"#0a0f0e", color:"#d6ffe9", minWidth:220}}
           />
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value)}
             aria-label="Sort"
-            style={{
-              padding:"10px 12px",
-              borderRadius:12,
-              border:"1px solid rgba(0,255,154,.35)",
-              background:"#0a0f0e",
-              color:"#d6ffe9"
-            }}
+            style={{padding:"10px 12px", borderRadius:12, border:"1px solid rgba(0,255,154,.35)", background:"#0a0f0e", color:"#d6ffe9"}}
           >
             <option value="mc">Sort by Market Cap</option>
             <option value="usd">Sort by Price (USDT)</option>
@@ -164,21 +122,13 @@ export default function TokenTicker() {
             </thead>
             <tbody>
               {filtered.map((t, i) => (
-                <tr key={t.id} style={{
-                  background:"rgba(0,255,154,.05)",
-                  border:"1px solid rgba(0,255,154,.25)",
-                  borderRadius:12
-                }}>
+                <tr key={t.id} style={{background:"rgba(0,255,154,.05)", border:"1px solid rgba(0,255,154,.25)", borderRadius:12}}>
                   <td style={{padding:"10px 8px"}}>{i+1}</td>
                   <td style={{padding:"10px 8px", display:"flex", alignItems:"center", gap:10}}>
                     <img
                       src={t.logo}
                       alt={`${t.name} logo`}
-                      style={{
-                        width:24, height:24, borderRadius:6,
-                        background:"#fff", objectFit:"contain",
-                        boxShadow:"0 0 8px rgba(0,255,154,.2)", padding:2
-                      }}
+                      style={{width:24, height:24, borderRadius:6, background:"#fff", objectFit:"contain", boxShadow:"0 0 8px rgba(0,255,154,.2)", padding:2}}
                       loading="lazy"
                     />
                     <div>
@@ -189,12 +139,10 @@ export default function TokenTicker() {
                   <td style={{padding:"10px 8px"}}>{t.usdt != null ? fmt.usd(t.usdt) : "—"}</td>
                   <td style={{padding:"10px 8px"}}>{t.btc != null ? fmt.btc(t.btc) : "—"}</td>
                   <td style={{padding:"10px 8px"}}>{t.eth != null ? fmt.eth(t.eth) : "—"}</td>
-                  <td style={{padding:"10px 8px", color: (t.change24 ?? 0) >= 0 ? "#67ffaf" : "#ff5c7a"}}>
+                  <td style={{padding:"10px 8px", color:(t.change24 ?? 0) >= 0 ? "#67ffaf" : "#ff5c7a"}}>
                     {t.change24 != null ? fmt.pct(t.change24) : "—"}
                   </td>
-                  <td style={{padding:"10px 8px"}}>
-                    {t.marketCap != null ? `$${t.marketCap.toLocaleString()}` : "—"}
-                  </td>
+                  <td style={{padding:"10px 8px"}}>{t.marketCap != null ? `$${t.marketCap.toLocaleString()}` : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -203,7 +151,7 @@ export default function TokenTicker() {
       )}
 
       <div className="tiny" style={{opacity:.7, marginTop:10}}>
-        Data by CoinGecko • Prices in USDT≈USD, BTC, ETH • Refreshed on load
+        Data by CoinGecko • Top 250 • Prices in USDT≈USD, BTC, ETH
       </div>
     </section>
   );

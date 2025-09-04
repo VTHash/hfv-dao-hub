@@ -1,33 +1,40 @@
 import React from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
-import DaoHub from "./pages/DaoHub.jsx";
 import Home from "./pages/Home.jsx";
-import AIAgents from "./pages/AIAgents.jsx";
 import Hub from "./pages/Hub.jsx";
 
 export default function App() {
   return (
     <div className="app">
+      {/* Topbar */}
       <header className="topbar">
         <Link to="/" className="brand">
-          <span className="logo-dot" /> <span>HFV DAO Hub</span>
+          <span className="logo-dot" />
+          <span>HFV DAO Hub</span>
         </Link>
+
         <nav className="nav">
-          <NavLink to="/" end className="navlink">Home</NavLink>
-          <NavLink to="/daos" className="navlink">DAO Apps</NavLink>
+          <NavLink to="/" end className="navlink">
+            Home
+          </NavLink>
+          <NavLink to="/hub" className="navlink">
+            Hub
+          </NavLink>
         </nav>
       </header>
 
+      {/* Main */}
       <main className="container">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/daos" element={<DaoHub />} />
+          <Route path="/hub" element={<Hub />} />
         </Routes>
       </main>
 
+      {/* Footer */}
       <footer className="footer">
         <div>© {new Date().getFullYear()} HFV Protocol</div>
-        <div className="tiny">© HFV  transparent by design.</div>
+        <div className="tiny">© HFV  transparent by design</div>
       </footer>
     </div>
   );

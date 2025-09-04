@@ -68,7 +68,7 @@ export default function Hub() {
         <p className="sub">
           {isDao
             ? "Search & filter DAO apps. Open App, Governance, Forum, Vote, or Snapshot."
-            : "Search & filter AI- and agent-centric projects. Open their apps or governance."}
+            : "Search & filter AI and agent-centric projects. Open their apps or governance."}
         </p>
       </div>
 

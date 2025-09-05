@@ -1,0 +1,41 @@
+{
+  "rpcWebsocket": "wss://eth-mainnet.g.alchemy.com/v2/mHscPB6KNUMzDDQHXMYvy",
+  "rpcHttp": "https://eth-mainnet.g.alchemy.com/v2/mHscPB6KNUMzDDQHXMYvy",
+  "chainId": 1,
+
+  "daos": [
+    { "name": "MantleDAO", "snapshot": "mantlenetwork.eth", "tally": null },
+    { "name": "Optimism Collective", "snapshot": "optimism.eth", "tally": "optimism" },
+    { "name": "ENS DAO", "snapshot": "ens.eth", "tally": "ens" },
+    { "name": "Arbitrum DAO", "snapshot": "arbitrumfoundation.eth", "tally": "arbitrum" },
+    { "name": "DeXe DAO", "snapshot": "dexe.eth", "tally": null },
+    { "name": "GnosisDAO", "snapshot": "gnosis.eth", "tally": "gnosis" },
+    { "name": "MakerDAO (Sky)", "snapshot": "maker.eth", "tally": "maker" },
+    { "name": "The Graph DAO", "snapshot": "graphprotocol.eth", "tally": "graph" },
+    { "name": "SafeDAO", "snapshot": "safe.eth", "tally": "safe" },
+    { "name": "LidoDAO", "snapshot": "lido.eth", "tally": "lido" },
+    { "name": "Aave DAO", "snapshot": "aave.eth", "tally": "aave" },
+    { "name": "Compound DAO", "snapshot": "compoundgrants.eth", "tally": "compound" },
+    { "name": "Gitcoin DAO", "snapshot": "gitcoindao.eth", "tally": "gitcoin" },
+    { "name": "dYdX DAO", "snapshot": "dydxgov.eth", "tally": "dydx" }
+  ],
+
+  "aiAgents": [
+    "Fetch.ai",
+    "SingularityNET",
+    "Bittensor",
+    "Autonolas",
+    "Numerai",
+    "Cortex",
+    "Alethea AI",
+    "Botto DAO",
+    "Ocean Protocol",
+    "Worldcoin",
+    "GaiaNet"
+  ],
+
+"stakingContracts": [
+  { "name":"HFV Staking",
+"address":"0x46E7007d6515B4f260f3CbC82f4672622eace802" }
+]
+}

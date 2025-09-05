@@ -1,0 +1,14 @@
+{
+  "name": "hfv-indexer",
+  "type": "module",
+  "private": true,
+  "scripts": { "dev": "tsx src/index.ts" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "pg": "^8.11.3",
+    "node-fetch": "^3.3.2",
+    "p-retry": "^6.2.0",
+    "tsx": "^4.16.0"
+  }
+}

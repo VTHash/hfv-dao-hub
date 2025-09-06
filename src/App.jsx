@@ -21,7 +21,8 @@ export default function App() {
   async function getInstruments() {
     const { data, error } = await supabase.from("instruments").select();
     if (error) {
-      console.error("Error fetching instruments:", error);
+      console.error("Error fetching instruments:", error.message || error);
+
     } else {
       setInstruments(data ?? []);
     }

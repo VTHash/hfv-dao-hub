@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase.js'
+import { createClient } from '@supabase/supabase-js'
 import fetch from 'node-fetch'
 
 // Use service role key (never expose to frontend)

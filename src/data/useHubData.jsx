@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
 // get recent proposals + social + agents
-export function useHubData() {
+export function useData() {
   const [loading, setLoading] = useState(true)
   const [daos, setDaos] = useState([])
   const [proposals, setProposals] = useState([])

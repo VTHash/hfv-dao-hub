@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import TokenTicker from "../components/TokenTicker.jsx";
+import HomeFeed from "../components/HomeFeed"
 export default function Home() {
   return (
     <section className="hero">
@@ -19,6 +20,7 @@ export default function Home() {
         </div>
 <div style={{marginTop:20}}>
   <TokenTicker />
+  <HomeFeed />
       </div>
     </section>
   );

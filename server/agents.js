@@ -1,4 +1,4 @@
-import { chatLLM } from "./llm.js";
+import { summarize } from "./llm.js";
 import { recentProposals, recentTreasury, recentStaking, recentLP, trendingAgents } from "./agentTools.js";
 
 export const Agents = {

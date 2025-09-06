@@ -8,7 +8,6 @@ export function useData() {
   const [proposals, setProposals] = useState([])
   const [agents, setAgents] = useState([])
   const [social, setSocial] = useState([])
-
   useEffect(() => {
     let isMounted = true
     ;(async () => {

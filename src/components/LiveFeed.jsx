@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
@@ -5,20 +6,26 @@ export default function LiveFeed() {
   const [posts, setPosts] = useState([])
 
   useEffect(() => {
-    fetchData()
+  if (!supabase) {
+    console.error('Supabase client not initialized')
+    return
+  }
 
-    const channel = supabase
-      .channel('any')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
-        console.log('Change received!', payload)
-        fetchData()
-      })
-      .subscribe()
+  fetchData()
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
+  const channel = supabase
+    .channel('any')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
+      console.log('Change received!', payload)
+      fetchData()
+    })
+    .subscribe()
+
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [])
+
 
   async function fetchData() {
     const { data, error } = await supabase

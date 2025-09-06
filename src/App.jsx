@@ -2,7 +2,7 @@ import React from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Hub from "./pages/Hub.jsx";
-
+import LiveFeed from "./components/LiveFeed"
 export default function App() {
   return (
     <div className="app">
@@ -41,6 +41,9 @@ export default function App() {
         <div>© {new Date().getFullYear()} HFV Protocol</div>
         <div className="tiny">© HFV  transparent by design</div>
       </footer>
+      <div><h1>HFV Hub</h1>
+      <LiveFeed />
+      </div>
     </div>
   );
 }

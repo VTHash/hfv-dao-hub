@@ -79,11 +79,12 @@ async function runWithLimit(tasks, limit = 2) {
 /* POST an agent by slug, e.g. "daoSummarizer" */
 async function callAgent(slug, payload) {
   try {
-    const res = await fetch(`/api/agents/${slug}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload || {})
-    });
+    const res = await fetch(`/.netlify/functions/${slug}`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload || {})
+});
+
     if (!res.ok) {
       const txt = await res.text();
       throw new Error(txt || `Agent ${slug} failed`);

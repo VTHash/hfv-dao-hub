@@ -48,7 +48,7 @@ function localImg(pathLike = "") {
 }
 
 const AGENT_IMAGE_MAP = {
-  askhfv: "/askhfv.png", // if you don't actually have this, it will fall back later
+  askhfv: "/hfv-logo.png", // if you don't actually have this, it will fall back later
   autonolas: "/autonolas.png",
   botto: "/botto.jpg",
   bittensor: "/bittensor.png",

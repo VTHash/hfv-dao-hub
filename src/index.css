@@ -140,7 +140,7 @@ body{
 .sep { margin: 0 6px; opacity: .6; }
 .desc { margin: 10px 0 8px; line-height: 1.4; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: .75rem; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+.chip { font-size: .75rem; padding: 3px 8px; border-radius: 999px; background: rgba(3, 139, 76, 0.06); border: 1px solid rgba(3, 230, 67, 0.1); }
 .pill { font-size: .75rem; padding: 2px 6px; border-radius: 6px; background: #0b5; color: #031; }
 .ext { display: inline-block; margin-top: 8px; font-size: .9rem; }
 
@@ -160,4 +160,46 @@ body{
 
 @media (prefers-reduced-motion: reduce) {
   .vortex-canvas { display: none; }
+}
+
+.hub-head {
+  background: #00331b; /* neon green */
+  color: #0a0a0a; /* dark text for contrast */
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.hub-head {
+  background: radial-gradient(circle at top left, #00ff88 0%, #004422 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  color: #00ff88; /* HFV neon green */
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid #00ff88;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.tab:hover {
+  background: rgba(0, 255, 136, 0.1);
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.6);
+}
+
+.tab.active {
+  background: rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.9);
 }

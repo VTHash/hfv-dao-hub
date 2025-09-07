@@ -8,7 +8,7 @@ function logoFromName(name = "") {
 
   // normalize common differences
   const map = {
-    askhfv: "askhfv.png",
+    askhfv: "hfv-logo.png",
     autonolas: "autonolas.png",
     botto: "botto.jpg",
     bittensor: "bittensor.png",

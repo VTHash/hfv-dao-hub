@@ -4,7 +4,6 @@ import Home from "./pages/Home.jsx";
 import Hub from "./pages/Hub.jsx";
 import LiveFeed from "./components/LiveFeed.jsx";
 import { createClient } from "@supabase/supabase-js";
-import Vortex from "./components/Vortex.jsx";
 // Supabase client
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,

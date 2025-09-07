@@ -4,7 +4,7 @@ import Home from "./pages/Home.jsx";
 import Hub from "./pages/Hub.jsx";
 import LiveFeed from "./components/LiveFeed.jsx";
 import { createClient } from "@supabase/supabase-js";
-
+import Vortex from "./components/Vortex.jsx";
 // Supabase client
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -48,7 +48,7 @@ export default function App() {
       </header>
 
       {/* Main */}
-      <main className="container">
+      <main> className="container"
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hub" element={<Hub />} />
@@ -56,7 +56,6 @@ export default function App() {
 
         {/* Instruments list (Supabase) */}
         <section style={{ marginTop: "2rem" }}>
-          <h2>Instruments</h2>
           <ul>
             {instruments.map((instrument) => (
               <li key={instrument.id ?? instrument.name}>{instrument.name}</li>
@@ -66,16 +65,15 @@ export default function App() {
 
         {/* Live Feed */}
         <section style={{ marginTop: "2rem" }}>
+          <div className="tiny">LiveFeed </div>
           <h1>HFV Hub</h1>
           <LiveFeed />
         </section>
-      </main>
-
+         </main>
       {/* Footer */}
       <footer className="footer">
         <div>© {new Date().getFullYear()} HFV Protocol</div>
         <div className="tiny">© HFV transparent by design</div>
       </footer>
     </div>
-  );
-}
+)}

@@ -193,7 +193,7 @@ export default function HomeFeed() {
                     <span className="pill">{p.source_type}</span>
                     {p.author && <span className="sep"> • </span>}
                     {p.author && <span className="muted">{p.author}</span>}
-                    ){}
+                    {}
                   </div>
                 </div>
               </div>

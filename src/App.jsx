@@ -48,7 +48,7 @@ export default function App() {
       </header>
 
       {/* Main */}
-      <main> className="container"
+      <main>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hub" element={<Hub />} />

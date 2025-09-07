@@ -126,3 +126,21 @@ body{
   margin-right: 8px;
   filter: drop-shadow(0 0 6px rgba(0, 255, 154, 0.6));
 }
+
+
+.section-title { font-size: 1.6rem; margin: 0 0 12px; }
+.muted { opacity: 0.7; }
+.error { color: #ff6b6b; }
+.feed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; }
+.card-head { display: flex; gap: 12px; align-items: center; }
+.avatar { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background:#111; }
+.card-title { margin: 0; font-size: 1.1rem; }
+.meta { font-size: .85rem; opacity: .8; }
+.sep { margin: 0 6px; opacity: .6; }
+.desc { margin: 10px 0 8px; line-height: 1.4; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: .75rem; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+.pill { font-size: .75rem; padding: 2px 6px; border-radius: 6px; background: #0b5; color: #031; }
+.ext { display: inline-block; margin-top: 8px; font-size: .9rem; }
+

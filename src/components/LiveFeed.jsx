@@ -1,12 +1,13 @@
+// LiveFeed.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
-
 /* -------------------------------------------------------
-   CONFIG: which agents to run for each DAO (by name)
-   - If a DAO isn't listed here, it will use DEFAULT_AGENTS
-   - Values are agent endpoint slugs handled by your server
+   AGENT CONFIG
 -------------------------------------------------------- */
-const DEFAULT_AGENTS = ["daoSummarizer"];
+const DEFAULT_DAO_AGENTS = ["daoSummarizer"];
+const AI_AGENTS = ["daoSummarizer", "aiSummarizer"];
+
+/* Per-DAO agent overrides */
 const AGENT_ENDPOINTS = {
   Lido: ["stakingAnalyst", "daoSummarizer"],
   Arbitrum: ["daoSummarizer"],
@@ -15,17 +16,17 @@ const AGENT_ENDPOINTS = {
   ENS: ["daoSummarizer"],
   Uniswap: ["daoSummarizer"],
   "The Graph": ["daoSummarizer"],
-  "Gitcoin": ["daoSummarizer"],
-  "Gnosis": ["daoSummarizer"],
-  "Safe": ["daoSummarizer"],
-  "Numerai": ["daoSummarizer"],
-  "Worldcoin": ["daoSummarizer"],
-  "GaiaNet": ["daoSummarizer"],
-  "Autonolas": ["daoSummarizer"],
-  "Cortex": ["daoSummarizer"],
+  Gitcoin: ["daoSummarizer"],
+  Gnosis: ["daoSummarizer"],
+  Safe: ["daoSummarizer"],
+  Numerai: ["daoSummarizer"],
+  Worldcoin: ["daoSummarizer"],
+  GaiaNet: ["daoSummarizer"],
+  Autonolas: ["daoSummarizer"],
+  Cortex: ["daoSummarizer"],
   "Alethea AI": ["daoSummarizer"],
-  "Botto": ["daoSummarizer"],
-  "Bittensor": ["daoSummarizer"],
+  Botto: ["daoSummarizer"],
+  Bittensor: ["daoSummarizer"],
   "Fetch.ai": ["daoSummarizer"],
   "SingularityNET": ["daoSummarizer"],
   Aave: ["daoSummarizer"],
@@ -33,29 +34,26 @@ const AGENT_ENDPOINTS = {
   dYdX: ["daoSummarizer"],
   DEXE: ["daoSummarizer"],
   Ocean: ["daoSummarizer"],
-  Mantle: ["daoSummarizer"]
+  Mantle: ["daoSummarizer"],
 };
 
 /* -------------------------------------------------------
    Helpers
 -------------------------------------------------------- */
 
-// turn "The Graph" -> "thegraph"
+// "The Graph" -> "thegraph"
 const slug = (s = "") =>
   s.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, "").replace(/(^-|-$)/g, "");
 
-// choose a local image path from /public (png/jpg/svg)
-function resolveLocalLogo(dao) {
-  // 1) explicit logo field (e.g. "lido.png" or "/lido.png")
-  if (dao?.logo) {
-    let p = dao.logo.trim().replace(/^public\//, "");
+// choose a local image path from /public (png primary, then jpg, then svg)
+function resolveLocalLogo(item) {
+  if (item?.logo) {
+    let p = item.logo.trim().replace(/^public\//, "");
     if (!p.startsWith("/")) p = "/" + p;
     return p;
   }
-
-  // 2) guess by name (try .png, .jpg, .svg)
-  const base = "/" + slug(dao?.name || "");
-  return `${base}.png`; // our primary convention
+  const base = "/" + slug(item?.name || "");
+  return `${base}.png`;
 }
 
 /* small concurrency guard so we don't hammer your server */
@@ -69,28 +67,25 @@ async function runWithLimit(tasks, limit = 2) {
       results.push(await job());
     }
   }
-  const workers = Array.from({ length: Math.min(limit, tasks.length) }, () =>
-    worker()
-  );
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => worker());
   await Promise.all(workers);
   return results;
 }
 
-/* POST an agent by slug, e.g. "daoSummarizer" */
+/* POST an agent by slug, e.g. "daoSummarizer" or "aiSummarizer" */
 async function callAgent(slug, payload) {
   try {
     const res = await fetch(`/.netlify/functions/${slug}`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload || {})
-});
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload || {}),
+    });
 
     if (!res.ok) {
       const txt = await res.text();
       throw new Error(txt || `Agent ${slug} failed`);
     }
     const data = await res.json().catch(() => ({}));
-    // normalize possible shapes coming from your agents.js
     if (typeof data === "string") return data;
     if (data?.result) return data.result;
     if (data?.text) return data.text;
@@ -104,13 +99,13 @@ async function callAgent(slug, payload) {
    Component
 -------------------------------------------------------- */
 export default function LiveFeed() {
-  const [daos, setDaos] = useState([]);
-  const [agentOut, setAgentOut] = useState({}); // { [daoName]: { [agent]: result } }
+  const [rowsDao, setRowsDao] = useState([]);
+  const [rowsAi, setRowsAi] = useState([]);
+  const [agentOut, setAgentOut] = useState({}); // key: `${type}:${name}` -> { agent: text }
   const [loading, setLoading] = useState(true);
 
-  // fetch daos from supabase
+  /* ------------ Loaders ------------ */
   async function loadDaos() {
-    setLoading(true);
     const { data, error } = await supabase
       .from("daos")
       .select("id,name,description,url,logo,tags,created_at")
@@ -118,80 +113,129 @@ export default function LiveFeed() {
 
     if (error) {
       console.error("DAOs load error:", error.message);
-      setDaos([]);
+      setRowsDao([]);
     } else {
-      setDaos(data || []);
+      setRowsDao(data || []);
     }
+  }
+
+  async function loadAiAgents() {
+    // expects a table "aiagents" with same schema as daos
+    const { data, error } = await supabase
+      .from("aiagents")
+      .select("id,name,description,url,logo,tags,created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("AI Agents load error:", error.message);
+      setRowsAi([]);
+    } else {
+      setRowsAi(data || []);
+    }
+  }
+
+  async function loadAll() {
+    setLoading(true);
+    await Promise.all([loadDaos(), loadAiAgents()]);
     setLoading(false);
   }
 
-  // run agents for a single dao and stash the results
-  async function runAgentsForDao(dao) {
-    const list = AGENT_ENDPOINTS[dao.name] || DEFAULT_AGENTS;
-    const tasks = list.map((ag) => async () => {
-      const text = await callAgent(ag, { q: dao.name, dao: dao.name, url: dao.url });
-      return { agent: ag, text };
-    });
-    const results = await runWithLimit(tasks, 2);
-    setAgentOut((prev) => ({
-      ...prev,
-      [dao.name]: results.reduce((acc, r) => ({ ...acc, [r.agent]: r.text }), {})
-    }));
-  }
-
-  // initial load + subscribe to changes
+  /* ------------ Effects ------------ */
+  // initial load + subscribe to both tables
   useEffect(() => {
-    loadDaos();
+    loadAll();
 
-    const ch = supabase
+    const chDaos = supabase
       .channel("live-daos")
       .on("postgres_changes", { event: "*", schema: "public", table: "daos" }, () => {
         loadDaos();
       })
       .subscribe();
 
-    return () => supabase.removeChannel(ch);
+    const chAgents = supabase
+      .channel("live-aiagents")
+      .on("postgres_changes", { event: "*", schema: "public", table: "aiagents" }, () => {
+        loadAiAgents();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(chDaos);
+      supabase.removeChannel(chAgents);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // whenever DAOs change, (re)run agents for each one
+  // run agents when lists change
   useEffect(() => {
-    if (!daos?.length) return;
-    daos.forEach((d) => runAgentsForDao(d));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daos]);
+    const runFor = async (type, item) => {
+      const key = `${type}:${item.name}`;
+      const agentNames =
+        type === "dao" ? AGENT_ENDPOINTS[item.name] || DEFAULT_DAO_AGENTS : AI_AGENTS;
 
-  const items = useMemo(() => daos || [], [daos]);
+      const tasks = agentNames.map((ag) => async () => {
+        const text = await callAgent(ag, { q: item.name, name: item.name, url: item.url, kind: type });
+        return { agent: ag, text };
+      });
+
+      const results = await runWithLimit(tasks, 2);
+      setAgentOut((prev) => ({
+        ...prev,
+        [key]: results.reduce((acc, r) => ({ ...acc, [r.agent]: r.text }), {}),
+      }));
+    };
+
+    rowsDao.forEach((d) => runFor("dao", d));
+    rowsAi.forEach((a) => runFor("ai", a));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowsDao, rowsAi]);
+
+  /* ------------ Derived list (merged) ------------ */
+  const items = useMemo(() => {
+    const daos = (rowsDao || []).map((d) => ({ ...d, __type: "dao" }));
+    const ais = (rowsAi || []).map((a) => ({ ...a, __type: "ai" }));
+    // Mix them together by created_at (newest first)
+    const all = [...daos, ...ais].sort((a, b) => {
+      const ta = new Date(a.created_at || 0).getTime();
+      const tb = new Date(b.created_at || 0).getTime();
+      return tb - ta;
+    });
+    return all;
+  }, [rowsDao, rowsAi]);
 
   return (
     <section style={{ marginTop: 24 }}>
       <h2 className="section-title">Live Feed</h2>
 
-      {loading && <div className="muted">Loading DAOs…</div>}
-      {!loading && items.length === 0 && <div className="muted">No DAOs found.</div>}
+      {loading && <div className="muted">Loading items…</div>}
+      {!loading && items.length === 0 && <div className="muted">No items found.</div>}
 
       <div className="feed-grid">
-        {items.map((dao) => {
-          const logoSrc = resolveLocalLogo(dao);
-          const outputs = agentOut[dao.name] || {};
-          const agentNames = AGENT_ENDPOINTS[dao.name] || DEFAULT_AGENTS;
+        {items.map((it) => {
+          const logoSrc = resolveLocalLogo(it);
+          const key = `${it.__type}:${it.name}`;
+          const outputs = agentOut[key] || {};
+          const agentNames =
+            it.__type === "dao"
+              ? AGENT_ENDPOINTS[it.name] || DEFAULT_DAO_AGENTS
+              : AI_AGENTS;
 
           return (
-            <article key={dao.id || dao.name} className="card">
+            <article key={(it.id || it.name) + ":" + it.__type} className="card">
               <div className="card-head">
                 <img
                   className="avatar"
                   src={logoSrc}
                   width={40}
                   height={40}
-                  alt={dao.name}
+                  alt={it.name}
                   onError={(e) => {
-                    // try .jpg then .svg, then fallback to HFV logo
                     const tried = e.currentTarget.getAttribute("data-tried") || "png";
                     if (tried === "png") {
-                      e.currentTarget.src = "/" + slug(dao.name) + ".jpg";
+                      e.currentTarget.src = "/" + slug(it.name) + ".jpg";
                       e.currentTarget.setAttribute("data-tried", "jpg");
                     } else if (tried === "jpg") {
-                      e.currentTarget.src = "/" + slug(dao.name) + ".svg";
+                      e.currentTarget.src = "/" + slug(it.name) + ".svg";
                       e.currentTarget.setAttribute("data-tried", "svg");
                     } else {
                       e.currentTarget.src = "/hfv-logo.png";
@@ -200,27 +244,39 @@ export default function LiveFeed() {
                   style={{ borderRadius: 8 }}
                 />
                 <div className="title-wrap">
-                  <h3 className="card-title">{dao.name || "Unknown DAO"}</h3>
+                  <h3 className="card-title">
+                    {it.name || (it.__type === "dao" ? "Unknown DAO" : "Unknown Agent")}
+                  </h3>
                   <div className="meta">
-                    {dao.url && (
-                      <a className="ext" href={dao.url} target="_blank" rel="noreferrer">
-                        {new URL(dao.url).hostname} ↗
-                      </a>
+                    <span className="pill" title="Type" style={{ marginRight: 6 }}>
+                      {it.__type.toUpperCase()}
+                    </span>
+                    {it.created_at && <span className="sep"> • </span>}
+                    {it.created_at && (
+                      <time className="muted">
+                        {new Date(it.created_at).toLocaleString()}
+                      </time>
+                    )}
+                    {it.url && (
+                      <>
+                        <span className="sep"> • </span>
+                        <a className="ext" href={it.url} target="_blank" rel="noreferrer">
+                          {safeHostname(it.url)} ↗
+                        </a>
+                      </>
                     )}
                   </div>
                 </div>
               </div>
 
-              {dao.description && <p className="desc">{dao.description}</p>}
+              {it.description && <p className="desc">{it.description}</p>}
 
-              {/* Agents output */}
+              {/* Agent outputs */}
               <div className="agents-out">
                 {agentNames.map((ag) => (
                   <div key={ag} className="agent-block">
                     <div className="pill" style={{ marginBottom: 6 }}>{ag}</div>
-                    <pre className="agent-pre">
-                      {outputs[ag] ? outputs[ag] : "…running"}
-                    </pre>
+                    <pre className="agent-pre">{outputs[ag] ? outputs[ag] : "…running"}</pre>
                   </div>
                 ))}
               </div>
@@ -229,7 +285,6 @@ export default function LiveFeed() {
         })}
       </div>
 
-      {/* minimal styles if you don't have these already */}
       <style>{`
         .feed-grid {
           display: grid;
@@ -250,7 +305,8 @@ export default function LiveFeed() {
         }
         .avatar { object-fit: contain; }
         .card-title { margin: 0; }
-        .meta { font-size: 12px; opacity: .8; }
+        .meta { font-size: 12px; opacity: .8; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .sep { opacity: .6; }
         .desc { margin: 8px 0 12px 0; opacity: .95; }
         .pill {
           display: inline-block;
@@ -275,4 +331,13 @@ export default function LiveFeed() {
       `}</style>
     </section>
   );
+}
+
+/* Utility */
+function safeHostname(url = "") {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
 }

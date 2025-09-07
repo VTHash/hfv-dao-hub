@@ -1,96 +1,75 @@
-import React, { useEffect, useState } from "react";
-import { useData } from '../data/useHubData'
-function Section({ title, children }) {
-  return (
-    <section className="card" style={{ maxWidth: 980, marginBottom: 12 }}>
-      <h2 style={{ marginTop: 0 }}>{title}</h2>
-      {children}
-    </section>
-  );
-}
+import React from 'react';
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
-export default function HomeFeed() {
-  const [data, setData] = useState({ recommendations: null, items: [] });
+export default function LiveFeed() {
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("/api/feed").then(r => r.json()).then(setData).catch(()=>{});
+    loadPosts();
+
+    // realtime listener
+    const channel = supabase
+      .channel("posts-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "posts" }, () => {
+        loadPosts();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  const rec = data.recommendations;
+  async function loadPosts() {
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error) {
+      console.error("Error loading posts:", error);
+      return;
+    }
+
+    // Filter out rows with no displayable text
+    const cleaned = (data || []).map((row) => {
+      const looksLikeConfig = (row.content || row.context || "").includes("| model=");
+      return {
+        id: row.id,
+        title: row.title || null,
+        content: looksLikeConfig ? null : (row.content || row.context || null),
+        author: row.author || "system",
+        url: row.url || null,
+        created_at: row.created_at,
+      };
+    });
+
+    setPosts(cleaned);
+  }
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      {rec && (
-        <Section title="Recommended for you">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {/* Governance */}
-            <div className="card" style={{ background: "rgba(0,255,154,.04)" }}>
-              <h3 style={{ marginTop: 0 }}>Governance — Hot Now</h3>
-              <ul className="list">
-                {rec.governance.map((g, i) => (
-                  <li key={i}>
-                    <b>{g.org}</b> — {g.title}
-                    {g.link && <a href={g.link} target="_blank" rel="noreferrer" style={{ marginLeft: 6, color: "#00ff9a" }}>↗</a>}
-                    <div className="muted" style={{ fontSize: 12 }}>Heat {g.heat}</div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Staking */}
-            <div className="card" style={{ background: "rgba(0,255,154,.04)" }}>
-              <h3 style={{ marginTop: 0 }}>Staking — Trending</h3>
-              <ul className="list">
-                {rec.staking.map((s, i) => (
-                  <li key={i}><b>Contract</b> {s.contract?.slice?.(0,8) || s.contract} — Score {s.score.toFixed(2)}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Pools */}
-            <div className="card" style={{ background: "rgba(0,255,154,.04)" }}>
-              <h3 style={{ marginTop: 0 }}>Pools — 24h Volume</h3>
-              <ul className="list">
-                {rec.pools.map((p, i) => (
-                  <li key={i}><b>Pair</b> {p.pair?.slice?.(0,8) || p.pair} — Vol {Math.round(p.volume)}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* AI Agents */}
-            <div className="card" style={{ background: "rgba(0,255,154,.04)" }}>
-              <h3 style={{ marginTop: 0 }}>AI Agents — Trending</h3>
-              <ul className="list">
-                {rec.agents.map((a, i) => (
-                  <li key={i}><b>{a.name || a}</b> — {a.count != null ? `${a.count} posts` : "info"}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Section>
-      )}
-
-      <Section title="Live Feed">
-        <ul className="list">
-          {data.items.map((it, i) => (
-            <li key={i} style={{ margin: "8px 0" }}>
-              <span style={{ marginRight: 6 }}>
-                {it.kind === "proposal" ? "🗳️" :
-                 it.kind === "treasury" ? "💰" :
-                 it.kind === "staking" ? "📈" :
-                 it.kind === "pool" ? "💧" :
-                 it.kind === "ai-agent" ? "🤖" :
-                 it.kind === "social" ? "📰" : "✨"}
-              </span>
-              <b>{it.title}</b>
-              {it.link && <a href={it.link} target="_blank" rel="noreferrer" style={{ marginLeft: 8, color: "#00ff9a" }}>↗</a>}
-              <div className="muted" style={{ fontSize: "0.8em" }}>
-                {new Date(it.ts).toLocaleString()} · {it.source}
+    <div>
+      <h2>Live Posts</h2>
+      <ul>
+        {posts.map((post) => (
+          <li key={post.id}>
+            <strong>{post.title || "Untitled"}</strong>
+            <div>{post.content || "[no content]"}</div>
+            <small>
+              by {post.author} • {new Date(post.created_at).toLocaleString()}
+            </small>
+            {post.url && (
+              <div>
+                <a href={post.url} target="_blank" rel="noreferrer">
+                  {post.url}
+                </a>
               </div>
-            </li>
-          ))}
-        </ul>
-      </Section>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

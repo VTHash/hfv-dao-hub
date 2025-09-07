@@ -3,8 +3,8 @@ import fetch from 'node-fetch'
 
 // Use service role key (never expose to frontend)
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.VITE_SUPABASE_URL,
+  process.env.VITE_SUPABASE_ANON_KEY
 )
 
 // Example: fetch latest proposals from Snapshot

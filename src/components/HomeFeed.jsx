@@ -193,12 +193,7 @@ export default function HomeFeed() {
                     <span className="pill">{p.source_type}</span>
                     {p.author && <span className="sep"> • </span>}
                     {p.author && <span className="muted">{p.author}</span>}
-                    {p.created_at && <span className="sep"> • </span>}
-                    {p.created_at && (
-                      <time className="muted">
-                        {new Date(p.created_at).toLocaleString()}
-                      </time>
-                    )}
+                    ){}
                   </div>
                 </div>
               </div>

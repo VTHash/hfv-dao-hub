@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { writePost } from "./_supabase.mjs";
 import fs from "fs";
-import * as Agents from "../../server/agents.js";
+import * as Agents from "/server/agents.js";
 const TARGETS = JSON.parse(fs.readFileSync("config/targets.json", "utf8"));
 
 /* ---------------- LLM (OpenAI) ---------------- */

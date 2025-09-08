@@ -32,8 +32,8 @@ export default function App() {
         </Routes>
 
         <section style={{ marginTop: "2rem" }}>
-          <div className="tiny">LiveFeed</div>
-          <h1>HFV Hub</h1>
+          
+          
           <LiveFeed />
         </section>
       </main>

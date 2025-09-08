@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import TokenTicker from "../components/TokenTicker.jsx";
-import HomeFeed from "../components/HomeFeed"
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 export default function Home() {
@@ -22,7 +21,7 @@ export default function Home() {
         </div>
 <div style={{marginTop:20}}>
   <TokenTicker />
-  <HomeFeed />
+  
       </div>
     </section>
   );

@@ -2,43 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
 
 // --- helpers ---------------------------------------------------------------
-function logoFromName(name = "") {
-  if (!name) return "/hfv-logo.png"; // fallback
-  const clean = name.trim().toLowerCase();
-
-  // normalize common differences
-  const map = {
-    askhfv: "hfv-logo.png",
-    autonolas: "autonolas.png",
-    botto: "botto.jpg",
-    bittensor: "bittensor.png",
-    ocean: "ocean.png",
-    alethea: "alethea.png",
-    numerai: "numerai.png",
-    gaianet: "gaianet.png",
-    cortex: "cortex.png",
-    worldcoin: "worldcoin.png",
-    fetchai: "fetch.png", // your file is fetch.png
-    singularitynet: "singularitynet.jpg",
-    arbitrum: "arbitrum.png",
-    compound: "compound.png",
-    dexe: "dexe.png",
-    dydx: "dydx.png",
-    ens: "ens.png",
-    gitcoin: "gitcoin.jpg",
-    gnosis: "gnosis.png",
-    lido: "lido.png",
-    makerdao: "makerdao.png",
-    mantle: "mantle.png",
-    optimism: "optimism.png",
-    safe: "safe.png",
-    thegraph: "thegraph.png",
-  };
-
-  if (map[clean]) return `/${map[clean]}`;
-  return `/hfv-logo.png`; // fallback if not found
-}
-// return a safe path that always points inside /public
 function localImg(pathLike = "") {
   if (!pathLike || typeof pathLike !== "string") return "";
   let p = pathLike.trim().replace(/^['"]|['"]$/g, "");
@@ -47,8 +10,44 @@ function localImg(pathLike = "") {
   return p;
 }
 
+// normalize common differences
+const map = {
+  askhfv: "hfv-logo.png",
+  autonolas: "autonolas.png",
+  botto: "botto.jpg",
+  bittensor: "bittensor.png",
+  ocean: "ocean.png",
+  alethea: "alethea.png",
+  numerai: "numerai.png",
+  gaianet: "gaianet.png",
+  cortex: "cortex.png",
+  worldcoin: "worldcoin.png",
+  fetchai: "fetch.png", // your file is fetch.png
+  singularitynet: "singularitynet.jpg",
+  arbitrum: "arbitrum.png",
+  compound: "compound.png",
+  dexe: "dexe.png",
+  dydx: "dydx.png",
+  ens: "ens.png",
+  gitcoin: "gitcoin.jpg",
+  gnosis: "gnosis.png",
+  lido: "lido.png",
+  makerdao: "makerdao.png",
+  mantle: "mantle.png",
+  optimism: "optimism.png",
+  safe: "safe.png",
+  thegraph: "thegraph.png",
+};
+
+// turns a source/name into a local /public image using the map above
+function logoFromName(name = "") {
+  if (!name) return "/hfv-logo.png";
+  const clean = String(name).trim().toLowerCase();
+  return map[clean] ? `/${map[clean]}` : "/hfv-logo.png";
+}
+
 const AGENT_IMAGE_MAP = {
-  askhfv: "/hfv-logo.png", // if you don't actually have this, it will fall back later
+  askhfv: "/hfv-logo.png",
   autonolas: "/autonolas.png",
   botto: "/botto.jpg",
   bittensor: "/bittensor.png",
@@ -58,7 +57,7 @@ const AGENT_IMAGE_MAP = {
   gaianet: "/gaianet.png",
   cortex: "/cortex.png",
   worldcoin: "/worldcoin.png",
-  fetchai: "/fetch.png", // note: your file is fetch.png
+  fetchai: "/fetch.png",
   singularitynet: "/singularitynet.jpg",
 };
 
@@ -76,7 +75,6 @@ function toChips(v = "") {
 }
 
 // --- component -------------------------------------------------------------
-
 export default function LiveFeed() {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | empty | error
@@ -95,13 +93,13 @@ export default function LiveFeed() {
 
       supabase
         .from("daos")
-        .select("id,name,description,url,logo,tags,created_at")
+        .select("id,name,description,url,logo_url,tags,created_at")
         .order("created_at", { ascending: false })
         .limit(40),
 
       supabase
         .from("ai_agents")
-        .select("id,key,name,description,endpoint,active,created_at") // no external avatar_url; we’ll map to /public/<key>.png
+        .select("id,key,name,description,endpoint,active,created_at")
         .order("created_at", { ascending: false })
         .limit(40),
     ]);
@@ -131,39 +129,37 @@ export default function LiveFeed() {
         source: p.source || "",
         url: p.url || "",
         chip,
-        // for posts we try to derive a local avatar from source/name
         avatar: logoFromName(p.source || p.title),
       };
     });
 
     // DAOs (use the logo filename from the table)
-const daos = (daosRes.data || []).map((d) => ({
-  id: `dao-${d.id}`,
-  kind: "dao",
-  title: d.name || "Unknown DAO",
-  desc: d.description || "",
-  author: "",
-  source_type: "dao",
-  source: "DAO Registry",
-  url: d.url || "",
-  chip: toChips(d.tags),
-  avatar: localImg(d.logo || "/hfv-logo.png"), // <-- trusts your /public file
-}));
-
+    const daos = (daosRes.data || []).map((d) => ({
+      id: `dao-${d.id}`,
+      kind: "dao",
+      title: d.name || "Unknown DAO",
+      desc: d.description || "",
+      author: "",
+      source_type: "dao",
+      source: "DAO Registry",
+      url: d.url || "",
+      chip: toChips(d.tags),
+      avatar: localImg(d.logo_url || "/hfv-logo.png"),
+    }));
 
     // AI Agents (map key -> exact /public filename)
-const agents = (agentsRes.data || []).map((a) => ({
-  id: `agent-${a.id}`,
-  kind: "agent",
-  title: a.name || a.key || "AI Agent",
-  desc: a.description || "",
-  author: "",
-  source_type: "agent",
-  source: a.key || "",
-  url: "", // keep empty so it won’t render an external link button
-  chip: a.active ? ["active"] : [],
-  avatar: agentAvatar(a.key || ""),
-}));
+    const agents = (agentsRes.data || []).map((a) => ({
+      id: `agent-${a.id}`,
+      kind: "agent",
+      title: a.name || a.key || "AI Agent",
+      desc: a.description || "",
+      author: "",
+      source_type: "agent",
+      source: a.key || "",
+      url: "",
+      chip: a.active ? ["active"] : [],
+      avatar: agentAvatar(a.key || ""),
+    }));
 
     const merged = [...posts, ...daos, ...agents];
 
@@ -234,7 +230,6 @@ const agents = (agentsRes.data || []).map((a) => ({
                 </div>
               )}
 
-              {/* Only show as a button if it's NOT a local /public image path */}
               {p.url && !p.url.startsWith("/") && (
                 <a className="ext" href={p.url} target="_blank" rel="noreferrer">
                   Open link ↗
